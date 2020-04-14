@@ -10,6 +10,7 @@ import java.util.List;
 public class Enemy
 {
     private List<Vector2> path;
+    private float pathLength = 0;
     private float pathComplete = 0; // 0 - 100
     private Texture texture;
 
@@ -18,14 +19,23 @@ public class Enemy
             Texture texture)
     {
         this.path = path;
+
+        Vector2 previous = new Vector2();
+        for (Vector2 step : path)
+        {
+            pathLength += step.cpy().sub(previous).len();
+            previous = step;
+        }
+        System.out.println(pathLength);
+
         this.texture = texture;
     }
 
     public void Draw(Batch batch)
     {
         Vector2 pathVec = positionFromPath(path, pathComplete);
-        System.out.println(pathVec + " " + pathComplete + "%");
-        pathComplete += 5f * Gdx.graphics.getDeltaTime();
+//        System.out.println(pathVec + " " + pathComplete + "%");
+        pathComplete += 15f * Gdx.graphics.getDeltaTime();
         if (pathComplete >= 100)
         {
             pathComplete = 0;
@@ -37,30 +47,28 @@ public class Enemy
             List<Vector2> path,
             float complete)
     {
-        float length = 0;
-
-        for (Vector2 step : path)
-        {
-            length += step.len();
-        }
 
         Vector2 result = new Vector2(0,0);
 
-        float completeLength = (length / 100) * complete;
+        float completeLength = (pathLength / 100) * complete;
+        Vector2 previous = new Vector2();
 
         for (Vector2 step : path)
         {
-            if (completeLength > step.len())
+            Vector2 steplen = step.cpy().sub(previous);
+            if (steplen.len() < completeLength)
             {
-                completeLength -= step.len();
-                //result = result.add(step);
+                completeLength -= steplen.len();
+                previous = step.cpy();
             }
             else
             {
-                Vector2 endResult = step.cpy();
-                endResult.setLength(completeLength);
-                result = result.add(endResult);
-                break;
+                Vector2 ret = step.cpy();
+                ret.sub(previous);
+                ret.setLength(completeLength);
+                ret.add(previous);
+
+                return ret;
             }
         }
 
