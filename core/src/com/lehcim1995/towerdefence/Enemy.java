@@ -12,6 +12,7 @@ public class Enemy
     private List<Vector2> path;
     private float pathLength = 0;
     private float pathComplete = 0; // 0 - 100
+    private boolean toDelete;
     private Texture texture;
 
     public Enemy(
@@ -38,7 +39,8 @@ public class Enemy
         pathComplete += 15f * Gdx.graphics.getDeltaTime();
         if (pathComplete >= 100)
         {
-            pathComplete = 0;
+//            pathComplete = 0;
+            toDelete = true;
         }
         batch.draw(texture, pathVec.x, pathVec.y);
     }
@@ -73,5 +75,14 @@ public class Enemy
         }
 
         return result;
+    }
+
+    public Vector2 getPosition()
+    {
+        return positionFromPath(path, pathComplete);
+    }
+
+    public boolean isToDelete() {
+        return toDelete;
     }
 }
