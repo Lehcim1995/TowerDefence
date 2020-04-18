@@ -1,4 +1,4 @@
-package screens;
+package com.lehcim1995.towerdefence.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -37,8 +37,8 @@ public class AbstractScreen implements Screen
 
         // temporary until we have asset manager in
 
-        FileHandle fh = Gdx.files.absolute(Gdx.files.getLocalStoragePath() + "/core/assets/skins/neon/skin/neon-ui.json");
-        skin = new Skin(fh);
+//        FileHandle fh = Gdx.files.absolute(Gdx.files.getLocalStoragePath() + "/core/assets/skins/neon/skin/neon-ui.json");
+//        skin = new Skin(fh);
     }
 
     @Override

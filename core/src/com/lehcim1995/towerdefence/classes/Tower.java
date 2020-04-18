@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.lehcim1995.towerdefence.ObjectList;
-import com.lehcim1995.towerdefence.TowerDefenceMain;
+import com.lehcim1995.towerdefence.screens.GameScreen;
 
 public class Tower
 {
@@ -77,7 +77,7 @@ public class Tower
 
     private void createProjectile()
     {
-        final Texture texture = new Texture(TowerDefenceMain.pathText + "towerDefense_tile275.png");
+        final Texture texture = new Texture(GameScreen.pathText + "towerDefense_tile275.png");
         Projectile projectile = new Projectile(this.position, rotation, 10, new Sprite(texture));
         ObjectList.getInstance().getProjectiles().add(projectile);
     }
