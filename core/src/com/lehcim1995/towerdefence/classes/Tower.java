@@ -14,14 +14,14 @@ public class Tower
     private float rotation;
     private float range;
     private float shootSpeed; // per second
-    private Texture base;
-    private Texture turret;
+    private Sprite base;
+    private Sprite turret;
     private Enemy enemy;
 
     public Tower(
             Vector2 position,
-            Texture base,
-            Texture turret)
+            Sprite base,
+            Sprite turret)
     {
         this.position = position;
         this.base = base;
@@ -54,15 +54,13 @@ public class Tower
             createProjectile();
         }
 
-        batch.draw(base, position.x, position.y);
-        batch.draw(turret,
-                position.x, position.y,
-                turret.getWidth()/2f, turret.getHeight()/2f,
-                turret.getWidth(),turret.getHeight(),
-                1,1,rotation,
-                0,0,
-                turret.getWidth(),turret.getHeight(),
-                false, false);
+        base.setPosition(position.x, position.y);
+        base.draw(batch);
+
+        turret.setPosition(position.x, position.y);
+        turret.setOrigin(turret.getWidth()/2, turret.getHeight()/2);
+        turret.setRotation(rotation);
+        turret.draw(batch);
     }
 
     public void Draw(ShapeRenderer shapeRenderer) {
@@ -78,7 +76,7 @@ public class Tower
     private void createProjectile()
     {
         final Texture texture = new Texture(GameScreen.pathText + "towerDefense_tile275.png");
-        Projectile projectile = new Projectile(this.position, rotation, 10, new Sprite(texture));
+        Projectile projectile = new Projectile(this.position, rotation, range, 10, new Sprite(texture));
         ObjectList.getInstance().getProjectiles().add(projectile);
     }
 

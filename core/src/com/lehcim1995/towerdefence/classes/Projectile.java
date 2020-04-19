@@ -1,6 +1,5 @@
 package com.lehcim1995.towerdefence.classes;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -8,22 +7,26 @@ import com.badlogic.gdx.math.Vector2;
 public class Projectile
 {
     private Vector2 position;
+    private Vector2 origin;
     private float direction;
     private float speed;
-    private Sprite spite;
+    private Sprite sprite;
+    private float distance;
+    private boolean toDelete;
 
     public Projectile(
             Vector2 position,
             float direction,
+            float distance,
             float speed,
-            Sprite spite)
+            Sprite sprite)
     {
         this.position = position.cpy();
+        this.origin = position.cpy();
         this.direction = direction;
+        this.distance = distance;
         this.speed = speed;
-        this.spite = spite;
-
-//        spite.setRotation(direction);
+        this.sprite = sprite;
     }
 
     public void Draw(Batch batch)
@@ -35,7 +38,14 @@ public class Projectile
         up.scl(speed);
         position.add(up.cpy());
 
-        spite.setPosition(position.x, position.y);
-        spite.draw(batch);
+        toDelete = position.cpy().sub(origin).len() > distance;
+
+        sprite.setPosition(position.x, position.y);
+        sprite.draw(batch);
+
+    }
+
+    public boolean isToDelete() {
+        return toDelete;
     }
 }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.kotcrab.vis.ui.VisUI;
 import com.lehcim1995.towerdefence.TowerDefenceMain;
 
 public class AbstractScreen implements Screen
@@ -30,6 +31,7 @@ public class AbstractScreen implements Screen
     public void show()
     {
         // Create a table that fills the screen. Everything else will go inside this table.
+        VisUI.load();
         table = new Table();
         table.setFillParent(true);
         table.setDebug(false);
@@ -82,6 +84,7 @@ public class AbstractScreen implements Screen
     @Override
     public void dispose()
     {
+        VisUI.dispose();
         stage.dispose();
     }
 
