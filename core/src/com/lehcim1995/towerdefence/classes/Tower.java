@@ -50,8 +50,9 @@ public class Tower
         if (enemy != null)
         {
             rotation = enemy.getPosition().cpy().sub(this.position).angle() - 90;
+            enemy.setToDelete(true);
             // if shooting??
-            createProjectile();
+            ObjectList.getInstance().spawnProjectile(this.position, rotation, this.range);
         }
 
         base.setPosition(position.x, position.y);
@@ -71,13 +72,6 @@ public class Tower
         {
             shapeRenderer.line(this.position, enemy.getPosition());
         }
-    }
-
-    private void createProjectile()
-    {
-        final Texture texture = new Texture(GameScreen.pathText + "towerDefense_tile275.png");
-        Projectile projectile = new Projectile(this.position, rotation, range, 10, new Sprite(texture));
-        ObjectList.getInstance().getProjectiles().add(projectile);
     }
 
     private Enemy findClosest()

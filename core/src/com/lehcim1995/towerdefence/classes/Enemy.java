@@ -61,6 +61,10 @@ public class Enemy
         return toDelete;
     }
 
+    public void setToDelete(boolean toDelete) {
+        this.toDelete = toDelete;
+    }
+
     private Vector2 positionFromPathPercent(
             List<Vector2> path,
             float complete)

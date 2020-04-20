@@ -7,8 +7,6 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.MapLayer;
@@ -29,7 +27,6 @@ import com.lehcim1995.towerdefence.ObjectList;
 import com.lehcim1995.towerdefence.TowerDefenceMain;
 import com.lehcim1995.towerdefence.classes.Enemy;
 import com.lehcim1995.towerdefence.classes.Projectile;
-import com.lehcim1995.towerdefence.classes.Tower;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,21 +38,16 @@ public class GameScreen extends AbstractScreen implements InputProcessor
     private SpriteBatch batch;
     private SpriteBatch textBatch;
     private ShapeRenderer shapeRenderer;
-    private Texture img;
-    private Texture base;
-    private Texture turret;
     private TiledMapTileSet tileset;
     private List<Vector2> path;
     private TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
-    private Camera camera;
+    private final OrthographicCamera camera = new OrthographicCamera();
     private float timer = 0;
     private final float spawnRate = 1f / 1f; // 1 per seconden
 
     private int mapPixelWidth;
     private int mapPixelHeight;
-
-    public static String pathText = "TowerDefence/PNG/Default size/";
 
     //UI elements
     private VisLabel fps;
@@ -78,13 +70,8 @@ public class GameScreen extends AbstractScreen implements InputProcessor
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true);
 
-        img = new Texture(pathText+"towerDefense_tile271.png");
-        base = new Texture(pathText+"towerDefense_tile181.png");
-        turret = new Texture(pathText+"towerDefense_tile203.png");
-
-        camera = new OrthographicCamera();
-        ((OrthographicCamera) camera).setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        ((OrthographicCamera) camera).zoom = 1f;
+        camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        camera.zoom = 1f;
 
         tileset = new TiledMapTileSet();
         map = new TmxMapLoader().load("Map_test.tmx");
@@ -101,7 +88,7 @@ public class GameScreen extends AbstractScreen implements InputProcessor
         mapPixelHeight = mapHeight * tilePixelHeight;
 
         camera.position.set(new Vector2(mapPixelWidth/2f, mapPixelHeight/2f), 0);
-        ((OrthographicCamera) camera).zoom = mapPixelHeight / Gdx.graphics.getHeight();
+        camera.zoom = mapPixelHeight / (float)Gdx.graphics.getHeight();
         camera.update();
 
         MapLayer pathLayer = map.getLayers().get("PathLayer");
@@ -116,11 +103,11 @@ public class GameScreen extends AbstractScreen implements InputProcessor
             path.add(v);
         }
 
-        spawnEnemy();
+        ObjectList.getInstance().spawnDefaultEnemy(path);
 
-        spawnTower(new Vector2(1024, 1024));
-        spawnTower(new Vector2(1024, 1100));
-        spawnTower(new Vector2(1024, 1200));
+        ObjectList.getInstance().spawnDefaultTower(new Vector2(1024, 1024));
+        ObjectList.getInstance().spawnDefaultTower(new Vector2(1024, 1100));
+        ObjectList.getInstance().spawnDefaultTower(new Vector2(1024, 1200));
 
         VisTextButton button = new VisTextButton("Click");
         button.addListener(new ChangeListener()
@@ -154,7 +141,7 @@ public class GameScreen extends AbstractScreen implements InputProcessor
         if (timer >= spawnRate)
         {
             timer -= spawnRate;
-            spawnEnemy();
+            ObjectList.getInstance().spawnDefaultEnemy(path);
         }
 
         updateCamera();
@@ -162,7 +149,7 @@ public class GameScreen extends AbstractScreen implements InputProcessor
         batch.setProjectionMatrix(camera.combined);
         shapeRenderer.setProjectionMatrix(camera.combined);
 
-        renderer.setView((OrthographicCamera) camera);
+        renderer.setView(camera);
         renderer.render();
 
         ObjectList.getInstance().getEnemies().removeAll(ObjectList.getInstance().getEnemies().stream().filter(Enemy::isToDelete).collect(Collectors.toList()));
@@ -196,15 +183,12 @@ public class GameScreen extends AbstractScreen implements InputProcessor
         super.resize(width, height);
 
 
-        float zoom = mapPixelHeight/height;
-
+        float zoom = mapPixelHeight / (float)height;
 
         camera.position.set(new Vector2((width/2f)*zoom, mapPixelHeight/2f), 0);
-//        camera.position.set(new Vector2((mapPixelWidth * zoom)/2f, mapPixelHeight/2f), 0);
-        ((OrthographicCamera) camera).viewportHeight = height;
-        ((OrthographicCamera) camera).viewportWidth = width;
-        ((OrthographicCamera) camera).zoom = zoom;
-//        ((OrthographicCamera) camera).zoom = mapPixelWidth/Gdx.graphics.getWidth();
+        camera.viewportHeight = height;
+        camera.viewportWidth = width;
+        camera.zoom = zoom;
         camera.update();
     }
 
@@ -235,7 +219,7 @@ public class GameScreen extends AbstractScreen implements InputProcessor
             Vector2 mousePos = new Vector2(Gdx.input.getX(), Gdx.input.getY());
             Vector3 worldSpace = camera.unproject(new Vector3(mousePos, 0));
 
-            spawnTower(new Vector2(worldSpace.x, worldSpace.y));
+            ObjectList.getInstance().spawnDefaultTower(new Vector2(worldSpace.x, worldSpace.y));
         }
 
         return false;
@@ -273,24 +257,8 @@ public class GameScreen extends AbstractScreen implements InputProcessor
         return false;
     }
 
-    private void spawnEnemy()
-    {
-        Enemy enemy;
-        enemy = new Enemy(path, new Sprite(img));
-        ObjectList.getInstance().getEnemies().add(enemy);
-    }
-
-    private void spawnTower(Vector2 position)
-    {
-
-        Tower tower = new Tower(position, new Sprite(base), new Sprite(turret));
-        ObjectList.getInstance().getTowers().add(tower);
-    }
-
     private void updateCamera()
     {
-        //camera.position.set(enemies.get(0).getPosition(), 0);
-
         camera.update();
     }
 
@@ -299,8 +267,6 @@ public class GameScreen extends AbstractScreen implements InputProcessor
         super.dispose();
         shapeRenderer.dispose();
         batch.dispose();
-        img.dispose();
-        base.dispose();
-        turret.dispose();
+        ObjectList.getInstance().dispose();
     }
 }
